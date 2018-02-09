@@ -54,6 +54,7 @@ char * params_substitution (const char *pattern, const char *parameters)
     long current_replace_index = -1;
     long current_replace_len = 0;
     long output_len = pattern_len;
+    int start_index = param_size;
     int i = 0;
     for (i = 0; i<pattern_len; i++)
     {
@@ -75,14 +76,17 @@ char * params_substitution (const char *pattern, const char *parameters)
             }
             else if (current_replace_index >= 0)
             {
-                if (current_replace_index <= param_size)
+                if (current_replace_index < param_size)
                 {
                   replace_index[pos] = current_replace_index;
                   replace_len[pos] = current_replace_len + 1;
                   replace_pos[pos] = i - replace_len[pos];
-                  /* parameters index starts with 1: %1 %2 %3 */
-                  output_len += strlen(*(params + replace_index[pos] - 1)) - replace_len[pos];
                   pos++;
+
+                  if (current_replace_index < start_index) 
+                  {
+                     start_index = current_replace_index;
+                  }
                 }
             }
             
@@ -93,9 +97,13 @@ char * params_substitution (const char *pattern, const char *parameters)
         }
     }
 
+  int replace_size = pos;
+  for (pos=0; pos < replace_size; pos++)
+  {
+      output_len += strlen(*(params + replace_index[pos] - start_index)) - replace_len[pos];
+  }
   char *output;
   output = (char*) malloc(sizeof(char) * output_len);
-  int replace_size = pos;
   pos = 0;
   int j = 0;
   for (i = 0; i < pattern_len; i++)
@@ -103,9 +111,9 @@ char * params_substitution (const char *pattern, const char *parameters)
     if (pos < replace_size && i == replace_pos[pos])
     {
           
-      strcat(output, *(params + replace_index[pos] - 1));
+      strcat(output, *(params + replace_index[pos] - start_index));
       i += replace_len[pos] - 1;
-      j += strlen(*(params + replace_index[pos] - 1));
+      j += strlen(*(params + replace_index[pos] - start_index));
       pos++;
     }
     else if (pattern[i] == '%' && pattern[i+1] == '%')
