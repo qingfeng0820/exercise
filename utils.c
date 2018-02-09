@@ -54,7 +54,8 @@ char* params_substitution (const char* pattern, const char* parameters)
     long current_replace_index = -1;
     long current_replace_len = 0;
     long output_len = pattern_len;
-    for (int i=0; i<pattern_len; i++)
+    int i = 0;
+    for (i = 0; i<pattern_len; i++)
     {
         if (pattern[i] == '%')
         {
@@ -97,7 +98,7 @@ char* params_substitution (const char* pattern, const char* parameters)
   int replace_size = pos;
   pos = 0;
   int j = 0;
-  for (int i=0; i < pattern_len; i++)
+  for (i = 0; i < pattern_len; i++)
   {
     if (pos < replace_size && i == replace_pos[pos])
     {
