@@ -4,14 +4,14 @@
 
 typedef enum { false, true } bool;
 
-char** str_split(const char* a_str, const char* a_delim)
+char ** str_split(const char *a_str, const char *a_delim)
 {
     int str_len = strlen(a_str);
-    char* tmp_str = malloc(sizeof(char) * str_len);
+    char *tmp_str = malloc(sizeof(char) * str_len);
     strcpy (tmp_str, a_str);
-    char** result = 0;
+    char **result = 0;
     int count = 0;
-    char* p = tmp_str;
+    char *p = tmp_str;
     int delim_len = strlen(a_delim);
     
     /* Count how many elements will be extracted. */
@@ -25,7 +25,7 @@ char** str_split(const char* a_str, const char* a_delim)
     p = tmp_str;
     result = malloc(sizeof(char*) * (count + 1));
     int idx  = 0;
-    char* token = strtok(tmp_str, a_delim);
+    char *token = strtok(tmp_str, a_delim);
     while (token)
     {
         *(result + idx++) = strdup(token);
@@ -35,12 +35,12 @@ char** str_split(const char* a_str, const char* a_delim)
     return result;
 }
 
-char* params_substitution (const char* pattern, const char* parameters)
+char * params_substitution (const char *pattern, const char *parameters)
 {
     long pattern_len = strlen(pattern);
-    char** params = str_split(parameters, ",");
+    char **params = str_split(parameters, ",");
     int param_size = 0;
-    char** r = params;
+    char **r = params;
     while (*r != 0)
     {
         param_size++;
