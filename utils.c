@@ -28,7 +28,7 @@ char ** str_split(const char *a_str, const char *a_delim)
     char *token = strtok(tmp_str, a_delim);
     while (token)
     {
-        *(result + idx++) = strdup(token);
+        *(result + idx++) = token;
         token = strtok(0, a_delim);
     }
     *(result + idx) = 0;
@@ -76,7 +76,7 @@ char * params_substitution (const char *pattern, const char *parameters)
             }
             else if (current_replace_index >= 0)
             {
-                if (current_replace_index < param_size)
+                if (current_replace_index <= param_size)
                 {
                   replace_index[pos] = current_replace_index;
                   replace_len[pos] = current_replace_len + 1;
@@ -97,7 +97,7 @@ char * params_substitution (const char *pattern, const char *parameters)
         }
     }
 
-  int replace_size = pos;
+  int replace_size = pos < param_size ? pos : param_size;
   for (pos=0; pos < replace_size; pos++)
   {
       output_len += strlen(*(params + replace_index[pos] - start_index)) - replace_len[pos];
