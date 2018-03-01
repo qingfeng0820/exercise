@@ -64,6 +64,13 @@ char ** str_split(const char *a_str, const char *a_delim)
     return result;
 }
 
+/**
+ * Parameters substitution for input patten
+ * 
+ * @param patten the input message patten
+ * @return parameters  the values for substitution, which is joined by a splitter.
+ * @return param_delim the spliiter for parameters
+ */
 char * params_substitution (const char *pattern, const char *parameters, const char *param_delim)
 {
     long pattern_len = strlen(pattern);
@@ -97,54 +104,13 @@ char * params_substitution (const char *pattern, const char *parameters, const c
     param_pt[i] = pre_p;
     param_len[i] = strlen(pre_p);
     
-    // get the amount of placeholder
-    int replace_size = 0;
-    long current_replace_index = -1;
-    bool is_param = false;
-    for (i = 0; i <= pattern_len; i++)
-    {
-        if (is_param)
-        {
-            if (pattern[i] >= '0' && pattern[i] <= '9') 
-            {
-                // calculate placeholder index. Like index of %0 is 0, index of %2 is 2
-                current_replace_index = (current_replace_index == -1 ? 0 : current_replace_index) * 10 + (pattern[i]-'0');
-                continue;
-            }
-            else if (current_replace_index >= 0)
-            {
-                if (current_replace_index < params_size)
-                {
-                    replace_size++;
-                }
-                
-                 // reset state
-                is_param = false;
-                current_replace_index = -1;
-            }
-        }
-        if (pattern[i] == '%')
-        {
-            is_param = !is_param;
-        }
-        else if (is_param)
-        {
-            is_param = !is_param;
-        }
-    }
-   
-    // Get replace positions in pattern
-    long replace_pos[replace_size];
-    int replace_index[replace_size];
-    int replace_len[replace_size];
-    int pos = 0;
-    is_param = false;
-    current_replace_index = -1;
-    long current_replace_len = 0;
+    // calculate the output length
     long output_len = pattern_len;
-    for (i = 0; i <= pattern_len; i++)
+    long current_replace_index = -1;
+    long current_replace_len = 0;
+    bool is_param = false;
+    for (i = 0; i <= pattern_len; i++) // cstring is null-terminated
     {
-        
         if (is_param)
         {
             if (pattern[i] >= '0' && pattern[i] <= '9') 
@@ -158,18 +124,10 @@ char * params_substitution (const char *pattern, const char *parameters, const c
             {
                 if (current_replace_index < params_size)
                 {
-                    replace_index[pos] = current_replace_index;
-                    replace_len[pos] = current_replace_len + 1;
-                    replace_pos[pos] = i - replace_len[pos];
-                    output_len += param_len[current_replace_index] - current_replace_len;
-                    pos++;
+                    output_len += param_len[current_replace_index] - current_replace_len - 1;
                 }
-                else
-                {
-                    printf("Error: no value for parameter index %d | %s\n", current_replace_index, pattern);
-                }
-
-                // reset state
+                
+                 // reset state
                 is_param = false;
                 current_replace_index = -1;
                 current_replace_len = 0;
@@ -187,41 +145,72 @@ char * params_substitution (const char *pattern, const char *parameters, const c
         else if (is_param)
         {
             is_param = !is_param;
-            printf("Error: cannot replace single % | %s\n", pattern);
         }
     }
 
     char *output;
     output = (char*) malloc(sizeof(char) * (output_len + 1));
-    pos = 0;
-    int j = 0;
+
     // do replacement
-    for (i = 0; i < pattern_len; i++)
+    is_param = false;
+    current_replace_index = -1;
+    current_replace_len = 0;
+    int j = 0;
+    for (i = 0; i <= pattern_len; i++) // include null at end of string
     {
-        if (pos < replace_size && i == replace_pos[pos])
+        if (is_param)
         {
-            if (replace_index[pos] < params_size)
+            if (pattern[i] >= '0' && pattern[i] <= '9') 
             {
-                strncpy(output + j, param_pt[replace_index[pos]], param_len[replace_index[pos]]);
-                i += replace_len[pos] - 1;
-                j += param_len[replace_index[pos]];
-                pos++;
+                // calculate placeholder index. Like index of %0 is 0, index of %2 is 2
+                current_replace_index = (current_replace_index == -1 ? 0 : current_replace_index) * 10 + (pattern[i]-'0');
+                current_replace_len++;
+                continue;
             }
-            else
+            else if (current_replace_index >= 0)
             {
-                output[j++] = pattern[i];
+                if (current_replace_index < params_size)
+                {
+                    // e.g. xxx%0xxx replace '%0' with parameter[0]
+                    strncpy(output + j, param_pt[current_replace_index], param_len[current_replace_index]);
+                    j += param_len[current_replace_index];
+                }
+                else
+                {
+                    // e.g. xxx%999xxx keep the '%999', log error
+                    strncpy(output + j, pattern + i - current_replace_len - 1, current_replace_len + 1);
+                    j += current_replace_len + 1;
+                    printf("Error: No value for parameter index %d | %s\n", current_replace_index, pattern);
+                }
+
+                // reset state
+                is_param = false;
+                current_replace_index = -1;
+                current_replace_len = 0;
             }
         }
-        else if (pattern[i] == '%' && pattern[i+1] == '%')
+        if (pattern[i] == '%')
         {
+            if (is_param)
+            {
+                // %% is %
+                output[j++] = '%';
+            }
+            is_param = !is_param;
+        }
+        else if (is_param)
+        {
+            // e.g. xxx%xxx keep the '%', log error
+            is_param = !is_param;
             output[j++] = '%';
-            i++;
+            output[j++] = pattern[i];
+            printf("Error: Cannot replace single % | %s\n", pattern);
         }
         else
         {
             output[j++] = pattern[i];
         }
     }
-    output[j] = 0;
+    
     return output;
 }
