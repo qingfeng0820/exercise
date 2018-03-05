@@ -68,8 +68,9 @@ char ** str_split(const char *a_str, const char *a_delim)
  * Parameters substitution for input patten
  * 
  * @param patten the input message patten
- * @return parameters  the values for substitution, which is joined by a splitter.
- * @return param_delim the spliiter for parameters
+ * @param parameters  the values for substitution, which is joined by a splitter.
+ * @param param_delim the spliter for parameters
+ * @return the completed message with parameters substituted
  */
 char * params_substitution (const char *pattern, const char *parameters, const char *param_delim)
 {
