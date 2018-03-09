@@ -4,14 +4,14 @@ django-admin.py startproject HelloWorld
 ```
 
 ```shell
-$ cd HelloWorld/
-$ tree
 .
+HelloWorld
 |-- HelloWorld
 |   |-- __init__.py
 |   |-- settings.py
 |   |-- urls.py
-|   `-- wsgi.py
+|   |-- wsgi.py
+|   `-- views.py
 `-- manage.py
 ```
 
@@ -22,12 +22,18 @@ django-admin.py startapp TestModel
 
 ```shell
 HelloWorld
+|-- HelloWorld
+|   |-- __init__.py
+|   |-- settings.py
+|   |-- urls.py
+|   |-- wsgi.py
+|   `-- views.py
 |-- TestModel
 |   |-- __init__.py
 |   |-- admin.py
 |   |-- models.py
 |   |-- tests.py
-|   `-- views.py
+`-- manage.py
 ```
 
 
