@@ -1,10 +1,9 @@
-Setup:
+Directory Structure:
 ```shell
 django-admin.py startproject HelloWorld
 ```
 
 ```shell
-.
 HelloWorld
 |-- HelloWorld
 |   |-- __init__.py
