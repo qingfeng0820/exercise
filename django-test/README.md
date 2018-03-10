@@ -41,3 +41,6 @@ Test:
 ```shell
 python manage.py runserver 0.0.0.0:8000
 ```
+
+
+Refer <http://www.runoob.com/django/django-tutorial.html>
