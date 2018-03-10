@@ -47,3 +47,22 @@ Refer <http://www.runoob.com/django/django-tutorial.html>
 
 
 Make Sublime to be python IDE <http://www.cnblogs.com/dolphin0520/archive/2013/04/29/3046237.html>
+
+
+Install mysqlclient issue on Mac:
+  ImportError: dlopen(/usr/local/lib/python2.7/site-packages/_mysql.so, 2): Library not loaded: libmysqlclient.18.dylib
+  Referenced from: /usr/local/lib/python2.7/site-packages/_mysql.so
+  Reason: image not found
+Why?
+  how _mysql.so find libmysqlclient.18.dylib
+  % otool -L /Library/Python/2.7/site-packages/_mysql.so
+   /Library/Python/2.7/site-packages/_mysql.so:
+    libmysqlclient.18.dylib (compatibility version 18.0.0, current version 18.0.0)
+    /usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 169.3.0)
+Solution:
+  % sudo install_name_tool -change libmysqlclient.18.dylib /usr/local/mysql/lib/libmysqlclient.18.dylib /Library/Python/2.7/site-packages/_mysql.so
+Then:
+   % otool -L /Library/Python/2.7/site-packages/_mysql.so                                                                                      
+   /Library/Python/2.7/site-packages/_mysql.so:
+    /usr/local/mysql/lib/libmysqlclient.18.dylib (compatibility version 18.0.0, current version 18.0.0)
+    /usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 169.3.0)
