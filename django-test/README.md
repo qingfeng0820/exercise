@@ -46,4 +46,4 @@ python manage.py runserver 0.0.0.0:8000
 Refer <http://www.runoob.com/django/django-tutorial.html>
 
 
-Make Sublime to be python IDE
+Make Sublime to be python IDE <http://www.cnblogs.com/dolphin0520/archive/2013/04/29/3046237.html>
