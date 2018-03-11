@@ -26,7 +26,7 @@ SECRET_KEY = 'b*+3fcn4he&hoq(rj196!8jz##tufs*2_7)nzv%_sxln%mg1hj'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '192.168.16.104']
 
 
 # Application definition
@@ -82,12 +82,15 @@ DATABASES = {
     #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     # }
     'default': {
-        'ENGINE': 'django.db.backends.mysql',  # 或者使用 mysql.connector.django
-        'NAME': 'django_test',
-        'USER': 'dev',
-        'PASSWORD': '123456',
-        'HOST':'localhost',
-        'PORT':'3306',
+        'ENGINE': 'django.db.backends.mysql',  # or use 'mysql.connector.django'
+        # 'NAME': 'django_test',
+        # 'USER': 'dev',
+        # 'PASSWORD': '123456',
+        # 'HOST':'localhost',
+        # 'PORT':'3306',
+        'OPTIONS': {
+            'read_default_file': os.path.join(BASE_DIR, 'my.cnf')
+        },
     }
 }
 
@@ -129,3 +132,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    # 'DEFAULT_PERMISSION_CLASSES': [
+    #     'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    # ]
+}
