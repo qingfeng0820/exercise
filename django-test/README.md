@@ -62,6 +62,8 @@ Django Restful Framework Refer <http://www.django-rest-framework.org>
 
 Restful Client: <https://httpie.org/doc>
 
+Sqlite DB Browser: <https://github.com/coleifer/sqlite-web>
+
 Make Sublime to be python IDE <http://www.cnblogs.com/dolphin0520/archive/2013/04/29/3046237.html>
 
 
