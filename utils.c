@@ -157,6 +157,9 @@ char * params_substitution (const char *pattern, const char *parameters, const c
     current_replace_index = -1;
     current_replace_len = 0;
     int j = 0;
+	bool logged_missing_param_value_warning = false;
+    bool logged_single_percent_sign_waring = false;
+	int replaced_placeholder_count = 0;
     for (i = 0; i <= pattern_len; i++) // include null at end of string
     {
         if (is_param)
@@ -175,13 +178,17 @@ char * params_substitution (const char *pattern, const char *parameters, const c
                     // e.g. xxx%0xxx replace '%0' with parameter[0]
                     strncpy(output + j, param_pt[current_replace_index], param_len[current_replace_index]);
                     j += param_len[current_replace_index];
+					replaced_placeholder_count++;
                 }
                 else
                 {
-                    // e.g. xxx%999xxx keep the '%999', log error
+                    // e.g. xxx%999xxx keep the '%999', log warning
                     strncpy(output + j, pattern + i - current_replace_len - 1, current_replace_len + 1);
                     j += current_replace_len + 1;
-                    printf("Error: No value for parameter index %d | %s\n", current_replace_index, pattern);
+                    if (!logged_missing_param_value_warning)
+                    {
+                        logged_missing_param_value_warning = true;
+                    }
                 }
 
                 // reset state
@@ -201,17 +208,28 @@ char * params_substitution (const char *pattern, const char *parameters, const c
         }
         else if (is_param)
         {
-            // e.g. xxx%xxx keep the '%', log error
+            // e.g. xxx%xxx keep the '%', log warning
             is_param = !is_param;
             output[j++] = '%';
             output[j++] = pattern[i];
-            printf("Error: Cannot replace single % | %s\n", pattern);
+			if (!logged_single_percent_sign_waring)
+            {
+				printf("WARNING: Cannot replace single % | Message: %s\n", pattern);
+                logged_single_percent_sign_waring = true;
+            }
         }
         else
         {
             output[j++] = pattern[i];
         }
     }
-    
+	if (logged_missing_param_value_warning)
+	{
+		printf("WARNING: No values for parameters from index %d | Message: %s | Args: %s\n", params_size, pattern, parameters);
+	}
+    if (replaced_placeholder_count < params_size)
+    {
+        printf("WARNING: %d parameter values but only replaced %d placeholders | Message: %s | Args: %s\n", params_size, replaced_placeholder_count, pattern, parameters);
+    }	
     return output;
 }
